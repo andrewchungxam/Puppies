@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{9465C14E-A479-48CD-9776-48D3274F9B2B}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Puppies</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Puppies.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuppiesListView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Dog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Service\CosmosDBService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Model\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Service\" />
+  </ItemGroup>
+</Project>
