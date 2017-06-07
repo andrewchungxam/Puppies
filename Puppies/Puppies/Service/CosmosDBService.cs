@@ -2,6 +2,9 @@
 using Microsoft.Azure.Documents.Client;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Azure.Documents;
+using System.Diagnostics;
+using Microsoft.Azure.Documents.Linq;
 
 namespace Puppies
 {
@@ -18,31 +21,63 @@ namespace Puppies
 		static readonly string DatabaseId = "Xamarin";
 		static readonly string CollectionId = "Dog";
 
+
+		public static List<Dog> MyListOfDogs;
+
 		//GETALL
-
-
-		//GET
-
-		public static async Task<List<Dog>> GetDogByIdAsync (string id)
+		public static async Task<List<Dog>> GetAllDogs ()
 		{
-			var result = await myDocumentClient.ReadDocumentAsync<Dog> (UriFactory.CreateDocumentUri (DatabaseId, CollectionId, id));
+			MyListOfDogs = new List<Dog> ();
+			try {
 
-			if (result.StatusCode != System.Net.HttpStatusCode.OK) {
-				return null;
+				var query = myDocumentClient.CreateDocumentQuery<Dog> (UriFactory.CreateDocumentCollectionUri (DatabaseId, CollectionId))
+				                            .AsDocumentQuery ();
+				while (query.HasMoreResults) {
+					MyListOfDogs.AddRange (await query.ExecuteNextAsync<Dog> ());
+				}
+			} catch (DocumentClientException ex) {
+				Debug.WriteLine ("Error: ", ex.Message);
 			}
+			return MyListOfDogs;
+		}
+	
 
-			List<Dog> returnedListDog = new List<Dog> ();
-			returnedListDog.Add (result);
+	//GET
+	public static async Task<List<Dog>> GetDogByIdAsync (string id)
+	{
+		var result = await myDocumentClient.ReadDocumentAsync<Dog> (UriFactory.CreateDocumentUri (DatabaseId, CollectionId, id));
 
-			return returnedListDog;
-
+		if (result.StatusCode != System.Net.HttpStatusCode.OK) {
+			return null;
 		}
 
-		//POST
+		List<Dog> returnedListDog = new List<Dog> ();
+		returnedListDog.Add (result);
 
-		//PUT
-
-		//DELETE
+		return returnedListDog;
 
 	}
+
+	//POST
+	public static async Task PostDogAsync (Dog dog)
+	{
+		await myDocumentClient.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (DatabaseId, CollectionId), dog);
+
+	}
+
+	//PUT
+	public static async Task PutDogAsync (Dog dog2)
+	{
+		await myDocumentClient.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (DatabaseId, CollectionId, dog2.Id), dog2);
+
+	}
+
+	//DELETE
+	public static async Task DeleteDogAsync (Dog deleteDog)
+	{
+		await myDocumentClient.DeleteDocumentAsync (UriFactory.CreateDocumentUri (DatabaseId, CollectionId, deleteDog.Id));
+
+	}
+
+}
 }
